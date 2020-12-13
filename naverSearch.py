@@ -28,7 +28,7 @@ def main():
     # proxy_setting()
     # url = 'https://m.naver.com/'
     url = 'https://google.com/'
-    subtitle = '아마존 리눅스 docker jenkins'
+    subtitle = 'java rsa string public key'
     keyword ='loverman85'
 
     mobile_emulation = {
@@ -121,8 +121,6 @@ def view_tab_click(driver):
 
 # 블로그에서 광고 클릭
 def ad_click(driver):
-    driver.refresh()
-    driver.refresh()
     driver.refresh()
     div = driver.find_element_by_id("ssp-adda")
     try:
