@@ -5,6 +5,17 @@ from fp.fp import FreeProxy
 from selenium.webdriver.common.keys import Keys
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
+
+# 네이버
+# 레오폴드 fc750 그라파이트
+# 클레버 이지뷰 맥북 거치대
+# 네이버 페이 5분투자
+#
+# 구글
+# 아마존 리눅스 docker jenkins
+# java rsa string public key
+# java 달력 만들기
 
 
 def main():
@@ -19,13 +30,22 @@ def main():
     url = 'https://google.com/'
     subtitle = '아마존 리눅스 docker jenkins'
     keyword ='loverman85'
-    driver = webdriver.Chrome(os.path.join(os.getcwd(), path))
+
+    mobile_emulation = {
+        "deviceMetrics": {"width": 480, "height": 900, "pixelRatio": 3.0},
+        "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19"}
+    chrome_options = Options()
+    chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+    driver = webdriver.Chrome(os.path.join(os.getcwd(), path), chrome_options=chrome_options)
 
     # 네이버 검색
     # naver_search(driver, url, subtitle, keyword)
 
     # 구글 검색
-    google_search(driver, url, subtitle, keyword)
+    try:
+        google_search(driver, url, subtitle, keyword)
+    except NoSuchElementException:
+        print('NoSuchElementException')
     time.sleep(3)
 
     # 최근에 열린 탭으로 전환
@@ -36,9 +56,9 @@ def main():
 
 def google_search(driver, url, subtitle, keyword):
     driver.get(url)
-    driver.find_element_by_css_selector('.gLFyf.gsfi').send_keys(subtitle)
-    driver.find_element_by_css_selector('.gLFyf.gsfi').send_keys(Keys.ENTER)
-    result_list = driver.find_elements_by_css_selector('div.hlcw0c')
+    driver.find_element_by_css_selector('.gLFyf').send_keys(subtitle)
+    driver.find_element_by_css_selector('.gLFyf').send_keys(Keys.ENTER)
+    result_list = driver.find_elements_by_css_selector('div#rso > div')
     my_blog_click_google(result_list, keyword)
     # 광고 클릭
     ad_click(driver)
@@ -46,11 +66,13 @@ def google_search(driver, url, subtitle, keyword):
 
 def my_blog_click_google(result_list, keyword):
     for one in result_list:
-        a_tag = one.find_element_by_css_selector('div.g > div.rc > div.yuRUbf > a')
+        print(one)
+        a_tag = one.find_element_by_css_selector('a.C8nzq.BmP5tf')
         a_url = a_tag.get_attribute('href')
         print(a_url)
-        if str(a_url).find(keyword):
+        if str(a_url).find(keyword) >= 0:
             a_tag.click()
+            break
     print('No search result at google')
 
 
@@ -99,13 +121,19 @@ def view_tab_click(driver):
 
 # 블로그에서 광고 클릭
 def ad_click(driver):
+    driver.refresh()
+    driver.refresh()
+    driver.refresh()
     div = driver.find_element_by_id("ssp-adda")
-    print(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
-    # iframe 으로 전환
-    # driver.switch_to.frame("id 또는 name")
-    driver.switch_to.frame(driver.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
-    a = driver.find_element_by_tag_name('a')
-    a.click()
+    try:
+        # iframe 으로 전환
+        # driver.switch_to.frame("id 또는 name")
+        driver.switch_to.frame(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
+        a = driver.find_element_by_tag_name('a')
+    except IndexError:
+        a = div.find_element_by_tag_name('a')
+    finally:
+        a.click()
 
 
 # 프록시 셋팅
