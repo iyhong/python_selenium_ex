@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from fp.fp import FreeProxy
 from selenium.webdriver.common.keys import Keys
 import time
+import random
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
@@ -20,16 +21,30 @@ from selenium.webdriver.chrome.options import Options
 
 def main():
     os_path = os.getcwd()
-    path = 'driver/chromedriver'
+    path = 'driver/chromedriver 2'
     print(os_path)
     print(os.path.join(os.getcwd(), path))
 
     # 프록시 설정
     # proxy_setting()
-    # url = 'https://m.naver.com/'
-    url = 'https://google.com/'
-    subtitle = 'java rsa string public key'
-    keyword ='loverman85'
+    url = 'https://m.naver.com/'
+    # url = 'https://google.com/'
+    title_list = [
+        'javascript async defer use strict',
+        '텔레그램 봇 telegram bot 만들기',
+        'ssh로 aws instance 접속',
+        'AWS ubuntu Tomcat 에 WAR파일 배포하기',
+        '레오폴드 fc750r 갈축 그라파이트',
+        '[maven] 설치하기 / 환경변수 설정 (mac)',
+        '크롬확장프로그램 현위치 날씨',
+        '네이버페이 5분투자',
+        '아마존 리눅스 docker jenkins',
+        '클레버이지뷰 맥북 거치대',
+        '[spring] DB properties 파일 읽어오기'
+    ]
+    # subtitle = '텔레그램 봇 telegram bot 만들기'
+    subtitle = 'ssh로 aws instance 접속'
+    keyword = 'loverman85'
 
     mobile_emulation = {
         "deviceMetrics": {"width": 480, "height": 900, "pixelRatio": 3.0},
@@ -38,16 +53,12 @@ def main():
     chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
     driver = webdriver.Chrome(os.path.join(os.getcwd(), path), chrome_options=chrome_options)
 
+    random.shuffle(title_list)
+    print(title_list)
+    subtitle = title_list[0]
     # 네이버 검색
-    # naver_search(driver, url, subtitle, keyword)
-
-    # 구글 검색
-    try:
-        google_search(driver, url, subtitle, keyword)
-    except NoSuchElementException:
-        print('NoSuchElementException')
-    time.sleep(3)
-
+    naver_search(driver, url, subtitle, keyword)
+    time.sleep(5)
     # 최근에 열린 탭으로 전환
     driver.switch_to.window(driver.window_handles[-1])
     driver.close()
@@ -94,17 +105,17 @@ def naver_search(driver, url, subtitle, keyword):
 # 블로그 들어가기 클릭
 def my_blog_click(driver, keyword):
     view_list = driver.find_elements_by_css_selector(".bx._svp_item > div.total_wrap > a")
-    print(view_list)
+    # print(view_list)
     for blog in view_list:
-        print(blog)
+        # print(blog)
         url = blog.get_attribute('href')
         # a = blog.find_element_by_xpath("//li[@class='bx']/div/a")
         # a = blog.find_elements_by_tag_name('a')
         str_url = str(url)
-        print(url)
+        # print(url)
         if str_url.find(keyword) >= 0:
             blog.click()
-            break
+            return
     print('No search result at naver')
 
 
@@ -123,15 +134,12 @@ def view_tab_click(driver):
 def ad_click(driver):
     driver.refresh()
     div = driver.find_element_by_id("ssp-adda")
-    try:
-        # iframe 으로 전환
-        # driver.switch_to.frame("id 또는 name")
-        driver.switch_to.frame(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
-        a = driver.find_element_by_tag_name('a')
-    except IndexError:
-        a = div.find_element_by_tag_name('a')
-    finally:
-        a.click()
+    # iframe 으로 전환
+    # driver.switch_to.frame("id 또는 name")
+    driver.switch_to.frame(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
+    a = driver.find_element_by_tag_name('a')
+    # print(a.get_attribute('href'))
+    a.click()
 
 
 # 프록시 셋팅
