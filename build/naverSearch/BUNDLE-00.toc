@@ -1,0 +1,3 @@
+([('naverSearch',
+   '/Users/inyonghong/Documents/study_python/blogAd/dist/naverSearch',
+   'EXECUTABLE')],)
