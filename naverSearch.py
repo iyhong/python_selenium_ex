@@ -8,8 +8,10 @@ import random
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
-# pyinstaller 로 실행파일 만드는 명령어
+# pyinstaller 로 실행파일 만드는 명령어 (mac)
 # pyinstaller --onefile --add-data "driver/chromedriver 2:./driver/" naverSearch.py
+# pyinstaller 로 실행파일 만드는 명령어 (window)
+# pyinstaller --onefile -w --add-data "driver/chromedriver 2;./driver/" naverSearch.py
 
 
 def main():
@@ -121,17 +123,20 @@ def view_tab_click(driver):
 # 블로그에서 광고 클릭
 def ad_click(driver):
     driver.refresh()
-    if not driver.find_element_by_id("ssp-adda"):
+    try:
+        div = driver.find_element_by_id("ssp-adda")
+    except NoSuchElementException:
+        print('no ad!!')
         return
-    div = driver.find_element_by_id("ssp-adda")
     # iframe 으로 전환
     # driver.switch_to.frame("id 또는 name")
-    print(div.find_elements_by_tag_name("iframe"))
-    if div.find_elements_by_tag_name("iframe"):
+    # print(div.find_elements_by_tag_name("iframe"))
+    try:
         driver.switch_to.frame(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
-    if not driver.find_element_by_tag_name('a'):
-        return
-    a = driver.find_element_by_tag_name('a')
+    except NoSuchElementException:
+        print('no iframe!!')
+    finally:
+        a = driver.find_element_by_tag_name('a')
     # print(a.get_attribute('href'))
     a.click()
 
