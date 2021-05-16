@@ -8,10 +8,8 @@ import random
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
-# pyinstaller 로 실행파일 만드는 명령어 (mac)
-# pyinstaller --onefile --add-data "driver/chromedriver 2:./driver/" naverSearch.py
-# pyinstaller 로 실행파일 만드는 명령어 (window)
-# pyinstaller --onefile -w --add-data "driver/chromedriver 2;./driver/" naverSearch.py
+# pyinstaller 로 실행파일 만드는 명령어
+# pyinstaller -F -w --add-data "driver/chromedriver 2:./driver/" naverSearch.py
 
 
 def main():
