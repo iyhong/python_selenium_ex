@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from fp.fp import FreeProxy
 from selenium.webdriver.common.keys import Keys
 import time
+import datetime
 import random
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -15,20 +16,23 @@ from selenium.webdriver.chrome.options import Options
 def main():
     os_path = os.getcwd()
     path = 'driver/chromedriver 2'
-    dir_path = os.path.dirname(os.path.realpath(__file__));
-    print(os_path)
-    print(os.path.join(path))
-    print(os.path.join(os.getcwd(), path))
-    print(os.path.abspath(__file__))
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    now = datetime.datetime.now()
+    print("=============================================")
+    print("Current date and time : "+now.strftime("%Y-%m-%d %H:%M:%S"))
+    # print(os_path)
+    # print(os.path.join(path))
+    # print(os.path.join(os.getcwd(), path))
+    # print(os.path.abspath(__file__))
     # 실행파일의 절대경로 구하기
-    print('절대경로')
-    print(os.path.dirname(os.path.realpath(__file__)))
+    # print('절대경로')
+    # print(os.path.dirname(os.path.realpath(__file__)))
     # 상대경로 구하기
-    print('상대경로')
-    print(os.path.relpath(dir_path))
-    print(os.path.join(dir_path, path))
+    # print('상대경로')
+    # print(os.path.relpath(dir_path))
+    # print(os.path.join(dir_path, path))
     os.chdir(dir_path)
-    print(os.getcwd())
+    # print(os.getcwd())
     # 프록시 설정
     # proxy_setting()
     url = 'https://m.naver.com/'
@@ -61,18 +65,18 @@ def main():
     chrome_options = Options()
     # chrome_options.add_argument('headless')
     chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-    driver = webdriver.Chrome(os.path.join(dir_path, path), chrome_options=chrome_options)
+    driver = webdriver.Chrome(os.path.join(dir_path, path), options=chrome_options)
     # driver = webdriver.Chrome(os.path.join(path), chrome_options=chrome_options)
-    driver.implicitly_wait(10);
+    driver.implicitly_wait(3)
     subtitle = random.choice(title_list)
-    print(subtitle)
+    print("검색제목: "+subtitle)
     # 네이버 검색
-    naver_search(driver, url, subtitle, keyword)
-    time.sleep(5)
-    # 최근에 열린 탭으로 전환
-    driver.switch_to.window(driver.window_handles[-1])
-    driver.close()
-    print('end')
+    if naver_search(driver, url, subtitle, keyword):
+        time.sleep(5)
+        # 최근에 열린 탭으로 전환
+        driver.switch_to.window(driver.window_handles[-1])
+        driver.close()
+    print('프로세스 종료!')
 
 
 # 네이버 검색
@@ -87,7 +91,12 @@ def naver_search(driver, url, subtitle, keyword):
     my_blog_click(driver, keyword)
 
     # 광고 클릭
-    ad_click(driver)
+    if ad_click(driver):
+        print('광고 클릭했습니당!!')
+        return True
+    else:
+        print('광고 클릭 안했어요~~~')
+        return False
 
 
 # 블로그 들어가기 클릭
@@ -120,12 +129,16 @@ def view_tab_click(driver):
 
 # 블로그에서 광고 클릭
 def ad_click(driver):
+    # 랜덤으로 광고를 클릭할지 말지 결정
+    if random.choice([True, False]):
+        return False
+
     driver.refresh()
     try:
         div = driver.find_element_by_id("ssp-adda")
     except NoSuchElementException:
         print('no ad!!')
-        return
+        return False
     # iframe 으로 전환
     # driver.switch_to.frame("id 또는 name")
     # print(div.find_elements_by_tag_name("iframe"))
@@ -137,6 +150,7 @@ def ad_click(driver):
         a = driver.find_element_by_tag_name('a')
     # print(a.get_attribute('href'))
     a.click()
+    return True
 
 
 # 프록시 셋팅
