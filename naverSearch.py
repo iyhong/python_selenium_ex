@@ -71,11 +71,10 @@ def main():
     subtitle = random.choice(title_list)
     print("검색제목: "+subtitle)
     # 네이버 검색
-    if naver_search(driver, url, subtitle, keyword):
-        time.sleep(5)
-        # 최근에 열린 탭으로 전환
-        driver.switch_to.window(driver.window_handles[-1])
-        driver.close()
+    naver_search(driver, url, subtitle, keyword)
+    time.sleep(10)
+
+    driver.close()
     print('프로세스 종료!')
 
 
