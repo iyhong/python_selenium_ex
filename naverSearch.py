@@ -11,14 +11,22 @@ from selenium.webdriver.chrome.options import Options
 
 # pyinstaller 로 실행파일 만드는 명령어
 # pyinstaller -F -w --add-data "driver/chromedriver 2:./driver/" naverSearch.py
+# 로딩이 될때까지 기다리는 최대시간
+IMPICITY_WAIT_SEC = 3
+# 블로그 들어와서 대기하는 시간
+WAIT_SEC = 60
+# 크론실행시 최대 대기시간(1~max 초 까지 대기)
+MAX_SEC = 280
 
 
 def main():
+    # 블로그 들어가기전 대기
+    print("=============================================")
+    wait_random_seconds(MAX_SEC)
     os_path = os.getcwd()
     path = 'driver/chromedriver 2'
     dir_path = os.path.dirname(os.path.realpath(__file__))
     now = datetime.datetime.now()
-    print("=============================================")
     print("Current date and time : "+now.strftime("%Y-%m-%d %H:%M:%S"))
     # print(os_path)
     # print(os.path.join(path))
@@ -50,7 +58,7 @@ def main():
         '[spring] DB properties 파일 읽어오기',
         '맥북 ssh 비번없이 로그인하기 ssh-keygen & ssh-copy-id',
         '[javascript] jsencrypt RSA 암호화',
-        'aws ec2 Amazon Linux git 설치',
+        # 'aws ec2 Amazon Linux git 설치',
         'aws ami 시스템 시간 확인 & 수정 하기',
         'aws에 git remote setup하기',
         'StringTokenizer Vs String.split()'
@@ -67,15 +75,18 @@ def main():
     chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
     driver = webdriver.Chrome(os.path.join(dir_path, path), options=chrome_options)
     # driver = webdriver.Chrome(os.path.join(path), chrome_options=chrome_options)
-    driver.implicitly_wait(3)
+    driver.implicitly_wait(IMPICITY_WAIT_SEC)
     subtitle = random.choice(title_list)
     print("검색제목: "+subtitle)
     # 네이버 검색
     naver_search(driver, url, subtitle, keyword)
-    time.sleep(10)
+    time.sleep(WAIT_SEC)
 
     driver.close()
     print('프로세스 종료!')
+    now = datetime.datetime.now()
+    print("Current date and time : " + now.strftime("%Y-%m-%d %H:%M:%S"))
+    print("=============================================")
 
 
 # 네이버 검색
@@ -86,9 +97,9 @@ def naver_search(driver, url, subtitle, keyword):
     driver.find_element_by_id('query').send_keys(Keys.ENTER)
     # VIEW 탭 클릭
     view_tab_click(driver)
+
     # 블로그클릭
     my_blog_click(driver, keyword)
-
     # 광고 클릭
     if ad_click(driver):
         print('광고 클릭했습니당!!')
@@ -96,6 +107,12 @@ def naver_search(driver, url, subtitle, keyword):
     else:
         print('광고 클릭 안했어요~~~')
         return False
+
+
+def wait_random_seconds(max_sec: int):
+    delay = random.randrange(1, max_sec)
+    print(str(delay) + "초 대기!!")
+    time.sleep(delay)
 
 
 # 블로그 들어가기 클릭
@@ -128,20 +145,20 @@ def view_tab_click(driver):
 
 # 블로그에서 광고 클릭
 def ad_click(driver):
+    # driver.refresh()
     # 랜덤으로 광고를 클릭할지 말지 결정
+
     if random.choice([True, False]):
         return False
-
-    driver.refresh()
     try:
         div = driver.find_element_by_id("ssp-adda")
     except NoSuchElementException:
         print('no ad!!')
         return False
-    # iframe 으로 전환
-    # driver.switch_to.frame("id 또는 name")
-    # print(div.find_elements_by_tag_name("iframe"))
     try:
+        # iframe 으로 전환
+        # driver.switch_to.frame("id 또는 name")
+        # print(div.find_elements_by_tag_name("iframe"))
         driver.switch_to.frame(div.find_elements_by_tag_name("iframe")[0].get_attribute('id'))
     except NoSuchElementException:
         print('no iframe!!')
